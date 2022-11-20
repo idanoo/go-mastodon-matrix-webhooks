@@ -10,11 +10,17 @@ type MatrixWebhook struct {
 type MastodonEvent struct {
 	Event  string `json:"event"`
 	Object struct {
-		ID            string `json:"id"`
-		Username      string `json:"username"`
-		Email         string `json:"email"`
-		IP            string `json:"ip"`
-		Notes         string `json:"invite_request"`
+		ID       string `json:"id"`
+		Username string `json:"username"`
+		Email    string `json:"email"`
+		IP       string `json:"ip"`
+		Notes    string `json:"invite_request"`
+		Comment  string `json:"comment"`
+		Account  struct {
+			ID       string      `json:"id"`
+			Username string      `json:"username"`
+			Domain   interface{} `json:"domain"`
+		} `json:"account"`
 		TargetAccount struct {
 			ID       string `json:"id"`
 			Username string `json:"username"`
