@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -95,28 +96,28 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func sendWebhook(msgText string) error {
 	log.Println(msgText)
 
-	// data := MatrixWebhook{
-	// 	Key: MATRIX_WEBHOOK_API_KEY,
-	// }
-	// data.Body = msgText
-	// b, err := json.Marshal(data)
-	// if err != nil {
-	// 	return err
-	// }
-	// req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL, bytes.NewBuffer(b))
-	// if err != nil {
-	// 	return err
-	// }
+	data := MatrixWebhook{
+		Key: MATRIX_WEBHOOK_API_KEY,
+	}
+	data.Body = msgText
+	b, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL, bytes.NewBuffer(b))
+	if err != nil {
+		return err
+	}
 
-	// req.Header.Set("X-Custom-Header", "myvalue")
-	// req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Custom-Header", "myvalue")
+	req.Header.Set("Content-Type", "application/json")
 
-	// client := &http.Client{}
-	// resp, err := client.Do(req)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer resp.Body.Close()
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
 
 	return nil
 }
@@ -139,5 +140,5 @@ func ipLookup(ip string) string {
 		return ""
 	}
 
-	return "(" + results.Country_long + ")"
+	return " (" + results.Country_long + ")"
 }
