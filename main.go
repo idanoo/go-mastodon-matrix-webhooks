@@ -67,17 +67,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if i.Event == "report.created" {
 			err = sendWebhook(
 				fmt.Sprintf(
-					"[New Report](%s): %s has reported %s for %s",
+					"[New Report](%s): *%s* has reported *%s*: %s",
 					fmt.Sprintf(
 						"https://mastodon.nz/admin/reports/%s",
 						i.Object.ID,
 					),
 					i.Object.Account.Username,
 					i.Object.TargetAccount.Username,
-					fmt.Sprintf(
-						"Comments: %s",
-						i.Object.Comment,
-					),
+					i.Object.Comment,
 				),
 			)
 			if err != nil {
