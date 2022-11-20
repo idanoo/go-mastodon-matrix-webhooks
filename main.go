@@ -74,17 +74,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			country := ipLookup(i.Object.IP)
 			err = sendWebhook(
 				fmt.Sprintf(
-					"New Signup%s: %s (%s). %s. %s",
+					"[New Signup](%s) %s: %s (%s). %s",
+					fmt.Sprintf(
+						"https://mastodon.nz/admin/accounts/%s",
+						i.Object.ID,
+					),
 					country,
 					i.Object.Username,
 					i.Object.Email,
 					fmt.Sprintf(
 						"Notes: %s",
 						i.Object.Notes,
-					),
-					fmt.Sprintf(
-						"https://mastodon.nz/admin/accounts/%s",
-						i.Object.ID,
 					),
 				),
 			)
