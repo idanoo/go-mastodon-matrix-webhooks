@@ -74,7 +74,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			country := ipLookup(i.Object.IP)
 			err = sendWebhook(
 				fmt.Sprintf(
-					"New Signup%s: %s (%s) has signed up.\n%s\n%s",
+					"New Signup%s: %s (%s). %s. %s",
 					country,
 					i.Object.Username,
 					i.Object.Email,
@@ -98,8 +98,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 // sendWebhook - takes msg, sends to matrix
 func sendWebhook(msgText string) error {
-	log.Println(msgText)
-
+	// log.Println(msgText)
 	data := MatrixWebhook{
 		Key: MATRIX_WEBHOOK_API_KEY,
 	}
@@ -109,7 +108,7 @@ func sendWebhook(msgText string) error {
 		return err
 	}
 
-	log.Printf("Sending %s to %s", b, MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL)
+	// log.Printf("Sending %s to %s", b, MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL)
 	req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL, bytes.NewBuffer(b))
 	if err != nil {
 		return err
@@ -145,5 +144,5 @@ func ipLookup(ip string) string {
 		return ""
 	}
 
-	return " from" + results.Country_long
+	return " from " + results.Country_long
 }
