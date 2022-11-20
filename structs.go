@@ -6,6 +6,11 @@ type IdentifyingRequest struct {
 	Event string `json:"event"`
 }
 
+type MatrixWebhook struct {
+	Body string `json:"body"`
+	Key  string `json:"key"`
+}
+
 type MastodonSignUpEvent struct {
 	Event     string    `json:"event"`
 	CreatedAt time.Time `json:"created_at"`
