@@ -108,12 +108,13 @@ func sendWebhook(msgText string) error {
 	if err != nil {
 		return err
 	}
+
+	log.Printf("Sending %s to %s", b, MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL)
 	req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL, bytes.NewBuffer(b))
 	if err != nil {
 		return err
 	}
 
-	req.Header.Set("X-Custom-Header", "myvalue")
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
