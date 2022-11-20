@@ -2,8 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -51,19 +49,7 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	var bodyBytes []byte
-	var err error
-
 	if r.Body != nil {
-		bodyBytes, err = io.ReadAll(r.Body)
-		if err != nil {
-			fmt.Printf("Body reading error: %v", err)
-			return
-		}
-		defer r.Body.Close()
-	}
-
-	if len(bodyBytes) > 0 {
 		var i IdentifyingRequest
 		err := json.NewDecoder(r.Body).Decode(&i)
 		if err != nil {
