@@ -66,16 +66,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Headers: %+v\n", r.Header)
 
 	if len(bodyBytes) > 0 {
-		b, err := io.ReadAll(r.Body)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
 		var i IdentifyingRequest
-		err = json.Unmarshal(b, &i)
+		err := json.NewDecoder(r.Body).Decode(&i)
 		if err != nil {
-			log.Println(err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
