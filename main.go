@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -70,7 +71,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				log.Println(err.Error())
 				return
 			}
-			go sendWebhook("New report!")
+			err = sendWebhook("New report!")
+			if err != nil {
+				log.Println(err.Error())
+				return
+			}
 		} else if i.Event == "account.created" {
 			var account MastodonSignUpEvent
 			err := json.NewDecoder(r.Body).Decode(&account)
@@ -79,7 +84,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			country := ipLookup(account.Object.IP)
-			go sendWebhook(fmt.Sprintf("*New Signup* %s has joined from %s", account.Object.Username, country))
+			err = sendWebhook(fmt.Sprintf("*New Signup* %s has joined from %s", account.Object.Username, country))
+			if err != nil {
+				log.Println(err.Error())
+				return
+			}
 		}
 	}
 }
@@ -96,7 +105,11 @@ func sendWebhook(msgText string) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL, b)
+	req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL, bytes.NewBuffer(b))
+	if err != nil {
+		return err
+	}
+
 	req.Header.Set("X-Custom-Header", "myvalue")
 	req.Header.Set("Content-Type", "application/json")
 
