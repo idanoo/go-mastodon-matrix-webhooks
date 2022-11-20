@@ -74,7 +74,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			country := ipLookup(i.Object.IP)
 			err = sendWebhook(
 				fmt.Sprintf(
-					"[New Signup](%s) %s: %s (%s). %s",
+					"[New Signup](%s) %s: *%s* (%s). %s *[APPROVE](%s)* or *[REJECT](%s)*",
 					fmt.Sprintf(
 						"https://mastodon.nz/admin/accounts/%s",
 						i.Object.ID,
@@ -86,6 +86,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 						"Notes: %s",
 						i.Object.Notes,
 					),
+					fmt.Sprintf("https://mastodon.nz/admin/accounts/%s/approve", i.Object.ID),
+					fmt.Sprintf("https://mastodon.nz/admin/accounts/%s/reject", i.Object.ID),
 				),
 			)
 			if err != nil {
