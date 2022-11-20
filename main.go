@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -16,7 +15,7 @@ var MATRIX_WEBHOOK_URL string
 var MATRIX_WEBHOOK_API_KEY string
 var MATRIX_CHANNEL string
 var PORT string
-var IP2LOCATION_API_KEY string
+var IP2LOCATION_FILE string
 
 func init() {
 	err := godotenv.Load()
@@ -44,7 +43,7 @@ func init() {
 		log.Fatal("PORT empty or invalid")
 	}
 
-	IP2LOCATION_API_KEY = os.Getenv("IP2LOCATION_API_KEY")
+	IP2LOCATION_FILE = os.Getenv("IP2LOCATION_API_KEY")
 }
 
 func main() {
@@ -72,7 +71,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			}
 		} else if i.Event == "account.created" {
 			country := ipLookup(i.Object.IP)
-			err = sendWebhook(fmt.Sprintf("*New Signup* %s has joined from %s", i.Object.Username, country))
+			err = sendWebhook(fmt.Sprintf("*New Signup* %s has signed up.%s", i.Object.Username, country))
 			if err != nil {
 				log.Println(err.Error())
 				return
@@ -85,60 +84,49 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func sendWebhook(msgText string) error {
 	log.Println(msgText)
 
-	data := MatrixWebhook{
-		Key: MATRIX_WEBHOOK_API_KEY,
-	}
-	data.Body = msgText
-	b, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-	req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL, bytes.NewBuffer(b))
-	if err != nil {
-		return err
-	}
+	// data := MatrixWebhook{
+	// 	Key: MATRIX_WEBHOOK_API_KEY,
+	// }
+	// data.Body = msgText
+	// b, err := json.Marshal(data)
+	// if err != nil {
+	// 	return err
+	// }
+	// req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL, bytes.NewBuffer(b))
+	// if err != nil {
+	// 	return err
+	// }
 
-	req.Header.Set("X-Custom-Header", "myvalue")
-	req.Header.Set("Content-Type", "application/json")
+	// req.Header.Set("X-Custom-Header", "myvalue")
+	// req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
+	// client := &http.Client{}
+	// resp, err := client.Do(req)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer resp.Body.Close()
 
 	return nil
 }
 
 // Lookup to country!
 func ipLookup(ip string) string {
-	if IP2LOCATION_API_KEY == "" {
+	if IP2LOCATION_FILE == "" {
 		return ""
 	}
 
-	apipackage := "WS25"
-	usessl := true
-	addon := "continent,country,region,city,geotargeting,country_groupings,time_zone_info" // leave blank if no need
-	lang := "en"                                                                           // leave blank if no need
-
-	ws, err := ip2location.OpenWS(IP2LOCATION_API_KEY, apipackage, usessl)
+	db, err := ip2location.OpenDB(IP2LOCATION_FILE)
+	if err != nil {
+		fmt.Print(err)
+		return ""
+	}
+	results, err := db.Get_all(ip)
 
 	if err != nil {
 		fmt.Print(err)
 		return ""
 	}
 
-	res, err := ws.LookUp(ip, addon, lang)
-
-	if err != nil {
-		fmt.Print(err)
-		return ""
-	}
-
-	if res.Response != "OK" {
-		fmt.Printf("Error: %s\n", res.Response)
-	}
-
-	return res.Country.Name
+	return "(" + results.Country_long + ")"
 }
