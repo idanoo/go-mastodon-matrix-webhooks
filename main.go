@@ -112,10 +112,6 @@ func sendWebhook(msgText string) error {
 
 // Lookup to country!
 func ipLookup(ip string) string {
-	if IP2LOCATION_FILE == "" {
-		return ""
-	}
-
 	log.Printf("Looking up: %s", ip)
 
 	db, err := ip2location.OpenDB(IP2LOCATION_FILE)
