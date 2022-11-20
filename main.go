@@ -71,7 +71,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			}
 		} else if i.Event == "account.created" {
 			country := ipLookup(i.Object.IP)
-			err = sendWebhook(fmt.Sprintf("*New Signup* %s (%s) has signed up.%s", i.Object.Username, i.Object.Email, country))
+			err = sendWebhook(
+				fmt.Sprintf(
+					"*New Signup* %s (%s) has signed up.%s\n%s",
+					i.Object.Username,
+					i.Object.Email,
+					country,
+					fmt.Sprintf(
+						"https://mastodon.nz/admin/accounts/%s",
+						i.Object.ID,
+					),
+				),
+			)
 			if err != nil {
 				log.Println(err.Error())
 				return
