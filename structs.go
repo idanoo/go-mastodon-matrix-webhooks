@@ -14,6 +14,7 @@ type MastodonEvent struct {
 		Username      string `json:"username"`
 		Email         string `json:"email"`
 		IP            string `json:"ip"`
+		Notes         string `json:"invite_request"`
 		TargetAccount struct {
 			ID       string `json:"id"`
 			Username string `json:"username"`
