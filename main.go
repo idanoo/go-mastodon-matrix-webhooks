@@ -67,7 +67,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if i.Event == "report.created" {
 			err = sendWebhook(
 				fmt.Sprintf(
-					"[New Report](%s): *%s* has reported *%s*: %s",
+					"[New Report](%s): **%s** has reported **%s**: %s",
 					fmt.Sprintf(
 						"https://mastodon.nz/admin/reports/%s",
 						i.Object.ID,
@@ -85,7 +85,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			country := ipLookup(i.Object.IP)
 			err = sendWebhook(
 				fmt.Sprintf(
-					"[New Signup](%s) %s: *%s* (%s). %s",
+					"[New Signup](%s) %s: **%s** (%s). %s",
 					fmt.Sprintf(
 						"https://mastodon.nz/admin/accounts/%s",
 						i.Object.ID,
