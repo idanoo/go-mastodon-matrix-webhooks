@@ -1,20 +1,15 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 )
-
-type IncomingMastoReq struct {
-	ID string `json:"id"`
-}
 
 var MATRIX_WEBHOOK_URL string
 var MATRIX_WEBHOOK_API_KEY string
@@ -60,7 +55,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if r.Body != nil {
-		bodyBytes, err = ioutil.ReadAll(r.Body)
+		bodyBytes, err = io.ReadAll(r.Body)
 		if err != nil {
 			fmt.Printf("Body reading error: %v", err)
 			return
@@ -71,13 +66,23 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Headers: %+v\n", r.Header)
 
 	if len(bodyBytes) > 0 {
-		var prettyJSON bytes.Buffer
-		if err = json.Indent(&prettyJSON, bodyBytes, "", "\t"); err != nil {
-			fmt.Printf("JSON parse error: %v", err)
+		b, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
 			return
 		}
-		fmt.Println(prettyJSON.String())
-	} else {
-		fmt.Printf("Body: No Body Supplied\n")
+
+		var i IdentifyingRequest
+		err = json.Unmarshal(b, &i)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		if i.Event == "report.created" {
+			log.Println("New report!")
+		} else if i.Event == "account.created" {
+			log.Println("New account!")
+		}
 	}
 }
