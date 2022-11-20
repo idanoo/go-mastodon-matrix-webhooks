@@ -2,71 +2,31 @@ package main
 
 import "time"
 
-type IdentifyingRequest struct {
-	Event string `json:"event"`
-}
-
 type MatrixWebhook struct {
 	Body string `json:"body"`
 	Key  string `json:"key"`
 }
 
-type MastodonSignUpEvent struct {
-	Event     string    `json:"event"`
-	CreatedAt time.Time `json:"created_at"`
-	Object    struct {
-		ID        string      `json:"id"`
-		Username  string      `json:"username"`
-		Domain    interface{} `json:"domain"`
-		CreatedAt time.Time   `json:"created_at"`
-		Email     string      `json:"email"`
-		IP        string      `json:"ip"`
-		Role      struct {
-			ID          int       `json:"id"`
-			Name        string    `json:"name"`
-			Color       string    `json:"color"`
-			Position    int       `json:"position"`
-			Permissions int       `json:"permissions"`
-			Highlighted bool      `json:"highlighted"`
-			CreatedAt   time.Time `json:"created_at"`
-			UpdatedAt   time.Time `json:"updated_at"`
-		} `json:"role"`
-		Confirmed     bool   `json:"confirmed"`
-		Suspended     bool   `json:"suspended"`
-		Silenced      bool   `json:"silenced"`
-		Sensitized    bool   `json:"sensitized"`
-		Disabled      bool   `json:"disabled"`
-		Approved      bool   `json:"approved"`
-		Locale        string `json:"locale"`
-		InviteRequest string `json:"invite_request"`
-		Ips           []struct {
-			IP     string    `json:"ip"`
-			UsedAt time.Time `json:"used_at"`
-		} `json:"ips"`
-		Account struct {
-			ID             string        `json:"id"`
-			Username       string        `json:"username"`
-			Acct           string        `json:"acct"`
-			DisplayName    string        `json:"display_name"`
-			Locked         bool          `json:"locked"`
-			Bot            bool          `json:"bot"`
-			Discoverable   interface{}   `json:"discoverable"`
-			Group          bool          `json:"group"`
-			CreatedAt      time.Time     `json:"created_at"`
-			Note           string        `json:"note"`
-			URL            string        `json:"url"`
-			Avatar         string        `json:"avatar"`
-			AvatarStatic   string        `json:"avatar_static"`
-			Header         string        `json:"header"`
-			HeaderStatic   string        `json:"header_static"`
-			FollowersCount int           `json:"followers_count"`
-			FollowingCount int           `json:"following_count"`
-			StatusesCount  int           `json:"statuses_count"`
-			LastStatusAt   interface{}   `json:"last_status_at"`
-			Noindex        bool          `json:"noindex"`
-			Emojis         []interface{} `json:"emojis"`
-			Fields         []interface{} `json:"fields"`
-		} `json:"account"`
+type MastodonEvent struct {
+	Event  string `json:"event"`
+	Object struct {
+		ID            string `json:"id"`
+		Username      string `json:"username"`
+		Email         string `json:"email"`
+		IP            string `json:"ip"`
+		TargetAccount struct {
+			ID       string `json:"id"`
+			Username string `json:"username"`
+			Domain   string `json:"domain"`
+			Account  struct {
+				ID          string `json:"id"`
+				Username    string `json:"username"`
+				Acct        string `json:"acct"`
+				DisplayName string `json:"display_name"`
+				Note        string `json:"note"`
+				URL         string `json:"url"`
+			} `json:"account"`
+		} `json:"target_account"`
 	} `json:"object"`
 }
 

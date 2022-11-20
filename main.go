@@ -57,7 +57,7 @@ func main() {
 // Handle requests
 func handler(w http.ResponseWriter, r *http.Request) {
 	if r.Body != nil {
-		var i IdentifyingRequest
+		var i MastodonEvent
 		err := json.NewDecoder(r.Body).Decode(&i)
 		if err != nil {
 			log.Println(err.Error())
@@ -65,26 +65,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if i.Event == "report.created" {
-			var report MastodonReportEvent
-			err := json.NewDecoder(r.Body).Decode(&report)
-			if err != nil {
-				log.Println(err.Error())
-				return
-			}
 			err = sendWebhook("New report!")
 			if err != nil {
 				log.Println(err.Error())
 				return
 			}
 		} else if i.Event == "account.created" {
-			var account MastodonSignUpEvent
-			err := json.NewDecoder(r.Body).Decode(&account)
-			if err != nil {
-				log.Println(err.Error())
-				return
-			}
-			country := ipLookup(account.Object.IP)
-			err = sendWebhook(fmt.Sprintf("*New Signup* %s has joined from %s", account.Object.Username, country))
+			country := ipLookup(i.Object.IP)
+			err = sendWebhook(fmt.Sprintf("*New Signup* %s has joined from %s", i.Object.Username, country))
 			if err != nil {
 				log.Println(err.Error())
 				return
