@@ -116,15 +116,17 @@ func ipLookup(ip string) string {
 		return ""
 	}
 
+	log.Printf("Looking up: %s", ip)
+
 	db, err := ip2location.OpenDB(IP2LOCATION_FILE)
 	if err != nil {
-		fmt.Print(err)
+		log.Print(err)
 		return ""
 	}
 	results, err := db.Get_all(ip)
 
 	if err != nil {
-		fmt.Print(err)
+		log.Print(err)
 		return ""
 	}
 
