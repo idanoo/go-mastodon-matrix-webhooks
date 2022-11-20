@@ -63,13 +63,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 	}
 
-	fmt.Printf("Headers: %+v\n", r.Header)
-
 	if len(bodyBytes) > 0 {
 		var i IdentifyingRequest
 		err := json.NewDecoder(r.Body).Decode(&i)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			log.Println(err.Error())
 			return
 		}
 
