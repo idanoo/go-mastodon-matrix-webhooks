@@ -43,7 +43,7 @@ func init() {
 		log.Fatal("PORT empty or invalid")
 	}
 
-	IP2LOCATION_FILE = os.Getenv("IP2LOCATION_API_KEY")
+	IP2LOCATION_FILE = os.Getenv("IP2LOCATION_FILE")
 }
 
 func main() {
@@ -71,7 +71,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			}
 		} else if i.Event == "account.created" {
 			country := ipLookup(i.Object.IP)
-			err = sendWebhook(fmt.Sprintf("*New Signup* %s has signed up.%s", i.Object.Username, country))
+			err = sendWebhook(fmt.Sprintf("*New Signup* %s (%s) has signed up.%s", i.Object.Username, i.Object.Email, country))
 			if err != nil {
 				log.Println(err.Error())
 				return
