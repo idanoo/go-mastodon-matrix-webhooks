@@ -14,7 +14,8 @@ import (
 
 var MATRIX_WEBHOOK_URL string
 var MATRIX_WEBHOOK_API_KEY string
-var MATRIX_CHANNEL string
+var MATRIX_ACCOUNT_CHANNEL string
+var MATRIX_REPORT_CHANNEL string
 var PORT string
 var IP2LOCATION_FILE string
 
@@ -34,9 +35,14 @@ func init() {
 		log.Fatal("MATRIX_WEBHOOK_API_KEY empty or invalid")
 	}
 
-	MATRIX_CHANNEL = os.Getenv("MATRIX_CHANNEL")
-	if MATRIX_CHANNEL == "" {
-		log.Fatal("MATRIX_CHANNEL empty or invalid")
+	MATRIX_ACCOUNT_CHANNEL = os.Getenv("MATRIX_ACCOUNT_CHANNEL")
+	if MATRIX_ACCOUNT_CHANNEL == "" {
+		log.Fatal("MATRIX_ACCOUNT_CHANNEL empty or invalid")
+	}
+
+	MATRIX_REPORT_CHANNEL = os.Getenv("MATRIX_REPORT_CHANNEL")
+	if MATRIX_REPORT_CHANNEL == "" {
+		log.Fatal("MATRIX_REPORT_CHANNEL empty or invalid")
 	}
 
 	PORT = os.Getenv("PORT")
@@ -76,6 +82,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 					i.Object.TargetAccount.Username,
 					i.Object.Comment,
 				),
+				MATRIX_REPORT_CHANNEL,
 			)
 			if err != nil {
 				log.Println(err.Error())
@@ -98,6 +105,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 						i.Object.Notes,
 					),
 				),
+				MATRIX_ACCOUNT_CHANNEL,
 			)
 			if err != nil {
 				log.Println(err.Error())
@@ -108,7 +116,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 // sendWebhook - takes msg, sends to matrix
-func sendWebhook(msgText string) error {
+func sendWebhook(msgText string, channel string) error {
 	// log.Println(msgText)
 	data := MatrixWebhook{
 		Key: MATRIX_WEBHOOK_API_KEY,
@@ -119,8 +127,8 @@ func sendWebhook(msgText string) error {
 		return err
 	}
 
-	// log.Printf("Sending %s to %s", b, MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL)
-	req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+MATRIX_CHANNEL, bytes.NewBuffer(b))
+	// log.Printf("Sending %s to %s", b, MATRIX_WEBHOOK_URL+"/"+channel)
+	req, err := http.NewRequest("POST", MATRIX_WEBHOOK_URL+"/"+channel, bytes.NewBuffer(b))
 	if err != nil {
 		return err
 	}
