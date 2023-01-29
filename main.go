@@ -111,6 +111,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				log.Println(err.Error())
 				return
 			}
+		} else if i.Event == "account.approved" {
+			log.Println(r.Body)
+			// err = sendWebhook(
+			// 	fmt.Sprintf(
+			// 		"[New Report](%s): **%s** has approved **%s**: %s",
+			// 		fmt.Sprintf(
+			// 			"https://mastodon.nz/admin/reports/%s",
+			// 			i.Object.ID,
+			// 		),
+			// 		i.Object.Account.Username,
+			// 		i.Object.TargetAccount.Username,
+			// 		i.Object.Comment,
+			// 	),
+			// 	MATRIX_REPORT_CHANNEL,
+			// )
+			// if err != nil {
+			// 	log.Println(err.Error())
+			// 	return
+			// }
 		}
 	}
 }
