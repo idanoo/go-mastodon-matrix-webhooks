@@ -71,17 +71,24 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if i.Event == "report.created" {
-			err = sendWebhook(
+			// Build message
+			msg := fmt.Sprintf(
+				"[New Report](%s): **%s** has reported **%s**: %s",
 				fmt.Sprintf(
-					"[New Report](%s): **%s** has reported **%s**: %s",
-					fmt.Sprintf(
-						"https://mastodon.nz/admin/reports/%s",
-						i.Object.ID,
-					),
-					i.Object.Account.Username,
-					i.Object.TargetAccount.Username,
-					i.Object.Comment,
+					"https://mastodon.nz/admin/reports/%s",
+					i.Object.ID,
 				),
+				i.Object.Account.Username,
+				i.Object.TargetAccount.Username,
+				i.Object.Comment,
+			)
+
+			// Log to stdout
+			log.Println(msg)
+
+			// Send to matrix
+			err = sendWebhook(
+				msg,
 				MATRIX_REPORT_CHANNEL,
 			)
 			if err != nil {
@@ -89,22 +96,29 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		} else if i.Event == "account.created" {
+			// Build message
 			country := ipLookup(i.Object.IP)
-			err = sendWebhook(
+			msg := fmt.Sprintf(
+				"[New Signup](%s) %s: **%s** (%s). %s",
 				fmt.Sprintf(
-					"[New Signup](%s) %s: **%s** (%s). %s",
-					fmt.Sprintf(
-						"https://mastodon.nz/admin/accounts/%s",
-						i.Object.ID,
-					),
-					country,
-					i.Object.Username,
-					i.Object.Email,
-					fmt.Sprintf(
-						"Notes: %s",
-						i.Object.Notes,
-					),
+					"https://mastodon.nz/admin/accounts/%s",
+					i.Object.ID,
 				),
+				country,
+				i.Object.Username,
+				i.Object.Email,
+				fmt.Sprintf(
+					"Notes: %s",
+					i.Object.Notes,
+				),
+			)
+
+			// Log to stdout
+			log.Println(msg)
+
+			// Send to matrix
+			err = sendWebhook(
+				msg,
 				MATRIX_ACCOUNT_CHANNEL,
 			)
 			if err != nil {
@@ -112,24 +126,29 @@ func handler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		} else if i.Event == "account.approved" {
-			log.Println(r.Body)
-			// err = sendWebhook(
-			// 	fmt.Sprintf(
-			// 		"[New Report](%s): **%s** has approved **%s**: %s",
-			// 		fmt.Sprintf(
-			// 			"https://mastodon.nz/admin/reports/%s",
-			// 			i.Object.ID,
-			// 		),
-			// 		i.Object.Account.Username,
-			// 		i.Object.TargetAccount.Username,
-			// 		i.Object.Comment,
-			// 	),
-			// 	MATRIX_REPORT_CHANNEL,
-			// )
-			// if err != nil {
-			// 	log.Println(err.Error())
-			// 	return
-			// }
+			msg := fmt.Sprintf(
+				"Account Approved [%s](%s)",
+				i.Object.Username,
+				fmt.Sprintf(
+					"https://mastodon.nz/admin/accounts/%s",
+					i.Object.ID,
+				),
+			)
+
+			// Log to stdout
+			log.Println(msg)
+
+			// Send to Matrix
+			err = sendWebhook(
+				msg,
+				MATRIX_ACCOUNT_CHANNEL,
+			)
+			if err != nil {
+				log.Println(err.Error())
+				return
+			}
+		} else {
+			log.Printf("Unknown event %s", i.Event)
 		}
 	}
 }
