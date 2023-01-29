@@ -127,21 +127,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			}
 		} else if i.Event == "account.approved" {
 			msg := fmt.Sprintf(
-				"[Account Approved](%s): %s by %s",
+				"[Signup Approved](%s): %s",
 				fmt.Sprintf(
 					"https://mastodon.nz/admin/accounts/%s",
 					i.Object.ID,
 				),
 				i.Object.Username,
-				"test",
 			)
 
 			// Log to stdout
 			log.Println(msg)
-
-			// Debug?
-			str, _ := json.Marshal(i)
-			log.Println(string(str))
 
 			// Send to Matrix
 			err = sendWebhook(
