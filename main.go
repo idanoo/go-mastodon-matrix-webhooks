@@ -141,7 +141,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 			// Debug?
 			str, _ := json.Marshal(i)
-			log.Println(str)
+			log.Println(string(str))
 
 			// Send to Matrix
 			err = sendWebhook(
