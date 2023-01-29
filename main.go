@@ -18,6 +18,7 @@ var MATRIX_ACCOUNT_CHANNEL string
 var MATRIX_REPORT_CHANNEL string
 var PORT string
 var IP2LOCATION_FILE string
+var MASTODON_INSTANCE string
 
 func init() {
 	err := godotenv.Load()
@@ -43,6 +44,11 @@ func init() {
 	MATRIX_REPORT_CHANNEL = os.Getenv("MATRIX_REPORT_CHANNEL")
 	if MATRIX_REPORT_CHANNEL == "" {
 		log.Fatal("MATRIX_REPORT_CHANNEL empty or invalid")
+	}
+
+	MASTODON_INSTANCE = os.Getenv("MASTODON_INSTANCE")
+	if MASTODON_INSTANCE == "" {
+		log.Fatal("MASTODON_INSTANCE is empty or invalid")
 	}
 
 	PORT = os.Getenv("PORT")
@@ -75,7 +81,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			msg := fmt.Sprintf(
 				"[New Report](%s): **%s** has reported **%s**: %s",
 				fmt.Sprintf(
-					"https://mastodon.nz/admin/reports/%s",
+					"https://%s/admin/reports/%s",
+					MASTODON_INSTANCE,
 					i.Object.ID,
 				),
 				i.Object.Account.Username,
@@ -101,7 +108,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			msg := fmt.Sprintf(
 				"[New Signup](%s) %s: **%s** (%s). %s",
 				fmt.Sprintf(
-					"https://mastodon.nz/admin/accounts/%s",
+					"https://%s/admin/accounts/%s",
+					MASTODON_INSTANCE,
 					i.Object.ID,
 				),
 				country,
@@ -129,7 +137,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			msg := fmt.Sprintf(
 				"[Signup Approved](%s): %s",
 				fmt.Sprintf(
-					"https://mastodon.nz/admin/accounts/%s",
+					"https://%s/admin/accounts/%s",
+					MASTODON_INSTANCE,
 					i.Object.ID,
 				),
 				i.Object.Username,
